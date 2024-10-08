@@ -2,52 +2,55 @@ const {User} = require('../models');
 const config = require('../config/config');
 const jwt = require('jsonwebtoken');
 
-function jwtSignUser (user) {
-    const ONE_WEEK = 60 * 60 * 24 * 7;
+function jwtSignUser(user) {
+    const ONE_WEEK = 60 * 60 * 24 * 7; // หนึ่งสัปดาห์
     return jwt.sign(user, config.authentication.jwtSecret, {
         expiresIn: ONE_WEEK
-    })
+    });
 }
 
 module.exports = {
-    async register (req, res) {
+    // ลงทะเบียนผู้ใช้ใหม่
+    async register(req, res) {
         try {
-            const user = await User.create(req.body);
-            res.send(user.toJSON());
+            const user = await User.create(req.body); // สร้างผู้ใช้ใหม่
+            res.send(user.toJSON()); // ส่งข้อมูลผู้ใช้กลับไป
         } catch (err) {
             res.status(400).send({
-                error: 'The content information was incorrect'
-            })
+                error: 'ข้อมูลที่ให้มาไม่ถูกต้อง' // ข้อความแสดงข้อผิดพลาด
+            });
         }
     },
-    async login (req, res) {
+    
+    // เข้าสู่ระบบ
+    async login(req, res) {
         try {
             const {email, password} = req.body;
             const user = await User.findOne({
                 where: {
-                    email: email
+                    email: email // ค้นหาผู้ใช้ตามอีเมล
                 }
             });
             if (!user) {
                 return res.status(403).send({
-                    error: 'User/Password was incorrect'
-                })
+                    error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' // กรณีไม่พบผู้ใช้
+                });
             }
-            const isPasswordValid = await user.comparePassword(password);
+            const isPasswordValid = await user.comparePassword(password); // ตรวจสอบรหัสผ่าน
             if (!isPasswordValid) {
                 return res.status(403).send({
-                    error: 'User/Password was incorrect'
-                })
+                    error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' // กรณีรหัสผ่านไม่ถูกต้อง
+                });
             }
-            const userJson = user.toJSON();
+            const userJson = user.toJSON(); // แปลงข้อมูลผู้ใช้เป็น JSON
             res.send({
-                user: userJson,
-                token: jwtSignUser(userJson)
-            })
+                user: userJson, // ส่งข้อมูลผู้ใช้กลับไป
+                token: jwtSignUser(userJson) // ส่ง token กลับไป
+            });
         } catch (err) {
             res.status(500).send({
-                error: 'Error! from get user'
-            })
+                error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้' // ข้อความแสดงข้อผิดพลาด
+            });
         }
     }
-}
+};

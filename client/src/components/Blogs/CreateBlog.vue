@@ -25,7 +25,6 @@
             accept="image/*"
             class="input-file"
           />
-          <!-- <p v-if="isInitial || isSuccess"> -->
           <p v-if="isInitial">
             Drag your file(s) here to begin<br />
             or click to browse
@@ -60,13 +59,32 @@
         @blur="onBlur($event)"
         @focus="onFocus($event)"
       />
+      <!-- ข้อมูลผลการแข่งขัน -->
       <p>
-        category:
-        <input type="text" v-model="blog.category" />
+        ผลการแข่งขัน (ชนะ/เสมอ/แพ้):
+        <input type="text" v-model="blog.matchResult" />
       </p>
       <p>
-        status:
-        <input type="text" v-model="blog.status" />
+        คะแนนที่ทำได้ (สกอร์):
+        <input type="text" v-model="blog.score" />
+      </p>
+      <!-- ข้อมูลผู้เล่นที่ทำประตู -->
+      <p>
+        ผู้เล่นที่ทำประตู:
+        <input type="text" v-model="blog.goalScorer" />
+      </p>
+      <p>
+        เวลาที่ทำประตู (นาทีที่):
+        <input type="number" v-model="blog.goalMinute" />
+      </p>
+      <!-- ข้อมูลผู้เล่น -->
+      <p>
+        ชื่อผู้เล่น:
+        <input type="text" v-model="blog.playerName" />
+      </p>
+      <p>
+        หมายเลขเสื้อ:
+        <input type="number" v-model="blog.playerNumber" />
       </p>
       <p>
         <button type="submit">create blog</button>
@@ -101,6 +119,12 @@ export default {
         thumbnail: "null",
         pictures: "null",
         content: "",
+        matchResult: "", // ผลการแข่งขัน
+        score: "", // คะแนนที่ทำได้
+        goalScorer: "", // ผู้เล่นที่ทำประตู
+        goalMinute: 0, // เวลาที่ทำประตู
+        playerName: "", // ชื่อผู้เล่น
+        playerNumber: 0, // หมายเลขเสื้อ
         category: "",
         status: "saved",
       },

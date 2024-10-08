@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Get all blogs</h2>
+        <h2>การแข่งขัน & ผลการแข่งขัน</h2>
         <p><button v-on:click="logout">Logout</button></p>
         <h4>จำนวน blog {{blogs.length}}</h4>
         <p><button v-on:click="navigateTo('/blog/create')">สร้าง blog</button></p>
