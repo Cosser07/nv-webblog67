@@ -7,9 +7,16 @@
         <div v-for="blog in blogs" v-bind:key="blog.id">
             <p>id: {{ blog.id }}</p>
             <p>title: {{ blog.title }}</p>
-            <p>content: {{ blog.content }}</p>
-            <p>category: {{ blog.category }}</p>
-            <p>status: {{ blog.status }}</p>
+            <!-- <p>content: {{ blog.content }}</p> -->
+            <!-- <p>category: {{ blog.category }}</p> -->
+            <!-- <p>status: {{ blog.status }}</p> -->
+            <!-- แสดงข้อมูลการแข่งขัน -->
+            <p>ผลการแข่งขัน: {{ blog.matchResult }}</p>
+            <p>คะแนนที่ทำได้: {{ blog.score }}</p>
+            <p>ผู้เล่นที่ทำประตู: {{ blog.goalScorer }}</p>
+            <p>เวลาที่ทำประตู: นาทีที่ {{ blog.goalMinute }}</p>
+            <p>ชื่อผู้เล่น: {{ blog.playerName }}</p>
+            <p>หมายเลขเสื้อ: {{ blog.playerNumber }}</p>
             <p>
             <button v-on:click="navigateTo('/blog/'+ blog.id)">ดู blog</button>
             <button v-on:click="navigateTo('/blog/edit/'+ blog.id)">แก้ไข blog</button>
@@ -19,6 +26,7 @@
         </div>
     </div>
 </template>
+
 <script>
     import BlogsService from '@/services/BlogsService'
     export default {
@@ -58,5 +66,6 @@
         }
     }
 </script>
+
 <style scoped>
 </style>

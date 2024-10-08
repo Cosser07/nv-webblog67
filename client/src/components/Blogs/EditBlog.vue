@@ -22,7 +22,6 @@
             accept="image/*"
             class="input-file"
           />
-          <!-- <p v-if="isInitial || isSuccess"> -->
           <p v-if="isInitial">
             Drag your file(s) here to begin<br />
             or click to browse
@@ -53,8 +52,33 @@
         @blur="onBlur($event)"
         @focus="onFocus($event)"
       />
-      <p>category: <input type="text" v-model="blog.category" /></p>
-      <p>status: <input type="text" v-model="blog.status" /></p>
+      <!-- ข้อมูลการแข่งขัน -->
+      <p>
+        ผลการแข่งขัน (ชนะ/เสมอ/แพ้):
+        <input type="text" v-model="blog.matchResult" />
+      </p>
+      <p>
+        คะแนนที่ทำได้ (สกอร์):
+        <input type="text" v-model="blog.score" />
+      </p>
+      <!-- ข้อมูลผู้เล่นที่ทำประตู -->
+      <p>
+        ผู้เล่นที่ทำประตู:
+        <input type="text" v-model="blog.goalScorer" />
+      </p>
+      <p>
+        เวลาที่ทำประตู (นาทีที่):
+        <input type="number" v-model="blog.goalMinute" />
+      </p>
+      <!-- ข้อมูลผู้เล่น -->
+      <p>
+        ชื่อผู้เล่น:
+        <input type="text" v-model="blog.playerName" />
+      </p>
+      <p>
+        หมายเลขเสื้อ:
+        <input type="number" v-model="blog.playerNumber" />
+      </p>
       <p>
         <button type="submit">update blog</button>
         <button v-on:click="navigateTo('/blogs')">กลับ</button>
@@ -62,6 +86,7 @@
     </form>
   </div>
 </template>
+
 <script>
 import BlogsService from "@/services/BlogsService";
 import VueCkeditor from "vue-ckeditor2";
@@ -78,7 +103,6 @@ export default {
     return {
       BASE_URL: "http://localhost:8081/assets/uploads/",
       error: null,
-      // uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
       uploadFieldName: "userPhoto",
@@ -90,6 +114,12 @@ export default {
         thumbnail: "null",
         pictures: "null",
         content: "",
+        matchResult: "", // ผลการแข่งขัน
+        score: "", // คะแนนที่ทำได้
+        goalScorer: "", // ผู้เล่นที่ทำประตู
+        goalMinute: 0, // เวลาที่ทำประตู
+        playerName: "", // ชื่อผู้เล่น
+        playerNumber: 0, // หมายเลขเสื้อ
         category: "",
         status: "",
       },
@@ -139,67 +169,16 @@ export default {
       console.log(route);
       this.$router.push(route);
     },
-    wait(ms) {
-      return (x) => {
-        return new Promise((resolve) => setTimeout(() => resolve(x), ms));
-      };
-    },
-    reset() {
-      // reset form to initial state
-      this.currentStatus = STATUS_INITIAL;
-      // this.uploadedFiles = []
-      this.uploadError = null;
-      this.uploadedFileNames = [];
-    },
-    async save(formData) {
-      // upload data to the server
-      try {
-        this.currentStatus = STATUS_SAVING;
-        await UploadService.upload(formData);
-        this.currentStatus = STATUS_SUCCESS;
-
-        // update image uploaded display
-        let pictureJSON = [];
-        this.uploadedFileNames.forEach((uploadFilename) => {
-          let found = false;
-          for (let i = 0; i < this.pictures.length; i++) {
-            if (this.pictures[i].name == uploadFilename) {
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            this.pictureIndex++;
-            let pictureJSON = {
-              id: this.pictureIndex,
-              name: uploadFilename,
-            };
-            this.pictures.push(pictureJSON);
-          }
-        });
-        this.clearUploadResult();
-      } catch (error) {
-        console.log(error);
-        this.currentStatus = STATUS_FAILED;
-      }
-    },
     filesChange(fieldName, fileList) {
-      // handle file changes
       const formData = new FormData();
       if (!fileList.length) return;
-      // append the files to FormData
       Array.from(Array(fileList.length).keys()).map((x) => {
         formData.append(fieldName, fileList[x], fileList[x].name);
         this.uploadedFileNames.push(fileList[x].name);
       });
-      // save it
       this.save(formData);
     },
-    clearUploadResult: function () {
-      setTimeout(() => this.reset(), 5000);
-    },
     useThumbnail(filename) {
-      console.log(filename);
       this.blog.thumbnail = filename;
     },
   },
@@ -217,115 +196,8 @@ export default {
       return this.currentStatus === STATUS_FAILED;
     },
   },
-  components: {
-    VueCkeditor,
-  },
   async created() {
     this.currentStatus = STATUS_INITIAL;
-    this.config.toolbar = [
-      {
-        name: "document",
-        items: [
-          "Source",
-          "-",
-          "Save",
-          "NewPage",
-          "Preview",
-          "Print",
-          "-",
-          "Templates",
-        ],
-      },
-      {
-        name: "clipboard",
-        items: [
-          "Cut",
-          "Copy",
-          "Paste",
-          "PasteText",
-          "PasteFromWord",
-          "-",
-          "Undo",
-          "Redo",
-        ],
-      },
-      {
-        name: "editing",
-        items: ["Find", "Replace", "-", "SelectAll", "-", "Scayt"],
-      },
-      {
-        name: "forms",
-        items: [
-          "Form",
-          "Checkbox",
-          "Radio",
-          "TextField",
-          "Textarea",
-          "Select",
-          "Button",
-          "ImageButton",
-          "HiddenField",
-        ],
-      },
-      "/",
-      {
-        name: "basicstyles",
-        items: [
-          "Bold",
-          "Italic",
-          "Underline",
-          "Strike",
-          "Subscript",
-          "Superscript",
-          "-",
-          "CopyFormatting",
-          "RemoveFormat",
-        ],
-      },
-      {
-        name: "paragraph",
-        items: [
-          "NumberedList",
-          "BulletedList",
-          "-",
-          "Outdent",
-          "Indent",
-          "-",
-          "Blockquote",
-          "CreateDiv",
-          "-",
-          "JustifyLeft",
-          "JustifyCenter",
-          "JustifyRight",
-          "JustifyBlock",
-          "-",
-          "BidiLtr",
-          "BidiRtl",
-          "Language",
-        ],
-      },
-      { name: "links", items: ["Link", "Unlink", "Anchor"] },
-      {
-        name: "insert",
-        items: [
-          "Image",
-          "Flash",
-          "Table",
-          "HorizontalRule",
-          "Smiley",
-          "SpecialChar",
-          "PageBreak",
-          "Iframe",
-          "InsertPre",
-        ],
-      },
-      "/",
-      { name: "styles", items: ["Styles", "Format", "Font", "FontSize"] },
-      { name: "colors", items: ["TextColor", "BGColor"] },
-      { name: "tools", items: ["Maximize", "ShowBlocks"] },
-      { name: "about", items: ["About"] },
-    ];
-
     try {
       let blogId = this.$route.params.blogId;
       this.blog = (await BlogsService.show(blogId)).data;
@@ -346,6 +218,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .dropbox {
   outline: 2px dashed grey; /* the dash box */

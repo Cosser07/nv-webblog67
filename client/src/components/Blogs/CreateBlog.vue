@@ -90,8 +90,39 @@
         <button type="submit">create blog</button>
       </p>
     </form>
+
+    <!-- ตารางข้อมูลการแข่งขัน -->
+    <div class="container">
+      <h2>Liverpool Premier League 2023-2024</h2>
+
+      <table id="matches-table">
+        <thead>
+          <tr>
+            <th>Match Title</th>
+            <th>Result</th>
+            <th>Score</th>
+            <th>Goalscorer</th>
+            <th>Minute</th>
+            <th>Player Name</th>
+            <th>Jersey Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(match, index) in matches" :key="index">
+            <td>{{ match.title }}</td>
+            <td>{{ match.result }}</td>
+            <td>{{ match.score }}</td>
+            <td>{{ match.goalScorer }}</td>
+            <td>{{ match.goalMinute }}</td>
+            <td>{{ match.playerName }}</td>
+            <td>{{ match.playerNumber }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
+
 <script>
 import BlogsService from "@/services/BlogsService";
 import VueCkeditor from "vue-ckeditor2";
@@ -107,13 +138,13 @@ export default {
     return {
       BASE_URL: "http://localhost:8081/assets/uploads/",
       error: null,
-      // uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
       uploadFieldName: "userPhoto",
       uploadedFileNames: [],
       pictures: [],
       pictureIndex: 0,
+      matches: [], // เก็บข้อมูลการแข่งขันที่เพิ่ม
       blog: {
         title: "",
         thumbnail: "null",
@@ -137,28 +168,32 @@ export default {
     };
   },
   methods: {
-    async delFile(material) {
-      let result = confirm("Want to delete?");
-      if (result) {
-        let dataJSON = {
-          filename: material.name,
-        };
-
-        await UploadService.delete(dataJSON);
-        for (var i = 0; i < this.pictures.length; i++) {
-          if (this.pictures[i].id === material.id) {
-            this.pictures.splice(i, 1);
-            this.materialIndex--;
-            break;
-          }
-        }
-      }
-    },
     async createBlog() {
       this.blog.pictures = JSON.stringify(this.pictures);
       console.log("JSON.stringify: ", this.blog);
       try {
+        // ส่งข้อมูลบล็อกไปยัง server (จำลอง)
         await BlogsService.post(this.blog);
+        // เพิ่มข้อมูลการแข่งขันไปยัง matches array เพื่อแสดงในตาราง
+        this.matches.push({
+          title: this.blog.title,
+          result: this.blog.matchResult,
+          score: this.blog.score,
+          goalScorer: this.blog.goalScorer,
+          goalMinute: this.blog.goalMinute,
+          playerName: this.blog.playerName,
+          playerNumber: this.blog.playerNumber,
+        });
+
+        // ล้างข้อมูลในฟอร์ม
+        this.blog.title = "";
+        this.blog.matchResult = "";
+        this.blog.score = "";
+        this.blog.goalScorer = "";
+        this.blog.goalMinute = 0;
+        this.blog.playerName = "";
+        this.blog.playerNumber = 0;
+
         this.$router.push({
           name: "blogs",
         });
@@ -171,69 +206,6 @@ export default {
     },
     onFocus(editor) {
       console.log(editor);
-    },
-    navigateTo(route) {
-      console.log(route);
-      this.$router.push(route);
-    },
-    wait(ms) {
-      return (x) => {
-        return new Promise((resolve) => setTimeout(() => resolve(x), ms));
-      };
-    },
-    reset() {
-      // reset form to initial state
-      this.currentStatus = STATUS_INITIAL;
-      // this.uploadedFiles = []
-      this.uploadError = null;
-      this.uploadedFileNames = [];
-    },
-    async save(formData) {
-      // upload data to the server
-      try {
-        this.currentStatus = STATUS_SAVING;
-        await UploadService.upload(formData);
-        this.currentStatus = STATUS_SUCCESS;
-
-        // update image uploaded display
-        let pictureJSON = [];
-        this.uploadedFileNames.forEach((uploadFilename) => {
-          let found = false;
-          for (let i = 0; i < this.pictures.length; i++) {
-            if (this.pictures[i].name == uploadFilename) {
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            this.pictureIndex++;
-            let pictureJSON = {
-              id: this.pictureIndex,
-              name: uploadFilename,
-            };
-            this.pictures.push(pictureJSON);
-          }
-        });
-        this.clearUploadResult();
-      } catch (error) {
-        console.log(error);
-        this.currentStatus = STATUS_FAILED;
-      }
-    },
-    filesChange(fieldName, fileList) {
-      // handle file changes
-      const formData = new FormData();
-      if (!fileList.length) return;
-      // append the files to FormData
-      Array.from(Array(fileList.length).keys()).map((x) => {
-        formData.append(fieldName, fileList[x], fileList[x].name);
-        this.uploadedFileNames.push(fileList[x].name);
-      });
-      // save it
-      this.save(formData);
-    },
-    clearUploadResult: function () {
-      setTimeout(() => this.reset(), 5000);
     },
     useThumbnail(filename) {
       console.log(filename);
@@ -259,125 +231,23 @@ export default {
   },
   created() {
     this.currentStatus = STATUS_INITIAL;
-    this.config.toolbar = [
-      {
-        name: "document",
-        items: [
-          "Source",
-          "-",
-          "Save",
-          "NewPage",
-          "Preview",
-          "Print",
-          "-",
-          "Templates",
-        ],
-      },
-      {
-        name: "clipboard",
-        items: [
-          "Cut",
-          "Copy",
-          "Paste",
-          "PasteText",
-          "PasteFromWord",
-          "-",
-          "Undo",
-          "Redo",
-        ],
-      },
-      {
-        name: "editing",
-        items: ["Find", "Replace", "-", "SelectAll", "-", "Scayt"],
-      },
-      {
-        name: "forms",
-        items: [
-          "Form",
-          "Checkbox",
-          "Radio",
-          "TextField",
-          "Textarea",
-          "Select",
-          "Button",
-          "ImageButton",
-          "HiddenField",
-        ],
-      },
-      "/",
-      {
-        name: "basicstyles",
-        items: [
-          "Bold",
-          "Italic",
-          "Underline",
-          "Strike",
-          "Subscript",
-          "Superscript",
-          "-",
-          "CopyFormatting",
-          "RemoveFormat",
-        ],
-      },
-      {
-        name: "paragraph",
-        items: [
-          "NumberedList",
-          "BulletedList",
-          "-",
-          "Outdent",
-          "Indent",
-          "-",
-          "Blockquote",
-          "CreateDiv",
-          "-",
-          "JustifyLeft",
-          "JustifyCenter",
-          "JustifyRight",
-          "JustifyBlock",
-          "-",
-          "BidiLtr",
-          "BidiRtl",
-          "Language",
-        ],
-      },
-      { name: "links", items: ["Link", "Unlink", "Anchor"] },
-      {
-        name: "insert",
-        items: [
-          "Image",
-          "Flash",
-          "Table",
-          "HorizontalRule",
-          "Smiley",
-          "SpecialChar",
-          "PageBreak",
-          "Iframe",
-          "InsertPre",
-        ],
-      },
-      "/",
-      { name: "styles", items: ["Styles", "Format", "Font", "FontSize"] },
-      { name: "colors", items: ["TextColor", "BGColor"] },
-      { name: "tools", items: ["Maximize", "ShowBlocks"] },
-      { name: "about", items: ["About"] },
-    ];
   },
 };
 </script>
+
 <style scoped>
 .dropbox {
-  outline: 2px dashed grey; /* the dash box */
+  outline: 2px dashed grey;
   outline-offset: -10px;
   background: lemonchiffon;
   color: dimgray;
   padding: 10px 10px;
-  min-height: 200px; /* minimum height */
+  min-height: 200px;
   position: relative;
   cursor: pointer;
 }
 .input-file {
-  opacity: 0; /* invisible but it's there! */
+  opacity: 0;
   width: 100%;
   height: 200px;
   position: absolute;
@@ -385,15 +255,9 @@ export default {
 }
 
 .dropbox:hover {
-  background: khaki; /* when mouse over to the drop zone, change color 
-*/
+  background: khaki;
 }
 
-.dropbox p {
-  font-size: 1.2em;
-  text-align: center;
-  padding: 50px 0;
-}
 ul.pictures {
   list-style: none;
   padding: 0;
@@ -412,8 +276,63 @@ ul.pictures li img {
 .clearfix {
   clear: both;
 }
-/* thumbnail */
 .thumbnail-pic img {
   width: 200px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #cc0000;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: center;
+}
+
+th {
+  background-color: #cc0000;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+td {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
 }
 </style>
