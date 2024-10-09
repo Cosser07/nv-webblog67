@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>Edit Blog</h1>
-    <form v-on:submit.prevent="editBlog">
-      <p>title: <input type="text" v-model="blog.title" /></p>
+    <h1>Edit lfc</h1>
+    <form v-on:submit.prevent="editlfc">
+      <p>title: <input type="text" v-model="lfc.title" /></p>
       <transition name="fade">
-        <div class="thumbnail-pic" v-if="blog.thumbnail != 'null'">
-          <img :src="BASE_URL + blog.thumbnail" alt="thumbnail" />
+        <div class="thumbnail-pic" v-if="lfc.thumbnail != 'null'">
+          <img :src="BASE_URL + lfc.thumbnail" alt="thumbnail" />
         </div>
       </transition>
       <form enctype="multipart/form-data" novalidate>
@@ -47,7 +47,7 @@
       <div class="clearfix"></div>
       <p><strong>content:</strong></p>
       <vue-ckeditor
-        v-model.lazy="blog.content"
+        v-model.lazy="lfc.content"
         :config="config"
         @blur="onBlur($event)"
         @focus="onFocus($event)"
@@ -55,40 +55,40 @@
       <!-- ข้อมูลการแข่งขัน -->
       <p>
         ผลการแข่งขัน (ชนะ/เสมอ/แพ้):
-        <input type="text" v-model="blog.matchResult" />
+        <input type="text" v-model="lfc.matchResult" />
       </p>
       <p>
         คะแนนที่ทำได้ (สกอร์):
-        <input type="text" v-model="blog.score" />
+        <input type="text" v-model="lfc.score" />
       </p>
       <!-- ข้อมูลผู้เล่นที่ทำประตู -->
       <p>
         ผู้เล่นที่ทำประตู:
-        <input type="text" v-model="blog.goalScorer" />
+        <input type="text" v-model="lfc.goalScorer" />
       </p>
       <p>
         เวลาที่ทำประตู (นาทีที่):
-        <input type="number" v-model="blog.goalMinute" />
+        <input type="number" v-model="lfc.goalMinute" />
       </p>
       <!-- ข้อมูลผู้เล่น -->
       <p>
         ชื่อผู้เล่น:
-        <input type="text" v-model="blog.playerName" />
+        <input type="text" v-model="lfc.playerName" />
       </p>
       <p>
         หมายเลขเสื้อ:
-        <input type="number" v-model="blog.playerNumber" />
+        <input type="number" v-model="lfc.playerNumber" />
       </p>
       <p>
-        <button type="submit">update blog</button>
-        <button v-on:click="navigateTo('/blogs')">กลับ</button>
+        <button type="submit">update lfc</button>
+        <button v-on:click="navigateTo('/lfc')">กลับ</button>
       </p>
     </form>
   </div>
 </template>
 
 <script>
-import BlogsService from "@/services/BlogsService";
+import lfcService from "@/services/lfcService";
 import VueCkeditor from "vue-ckeditor2";
 import UploadService from "../../services/UploadService";
 
@@ -109,7 +109,7 @@ export default {
       uploadedFileNames: [],
       pictures: [],
       pictureIndex: 0,
-      blog: {
+      lfc: {
         title: "",
         thumbnail: "null",
         pictures: "null",
@@ -149,11 +149,11 @@ export default {
         }
       }
     },
-    async editBlog() {
+    async editlfc() {
       try {
-        await BlogsService.put(this.blog);
+        await lfcService.put(this.lfc);
         this.$router.push({
-          name: "blogs",
+          name: "lfc",
         });
       } catch (err) {
         console.log(err);
@@ -179,7 +179,7 @@ export default {
       this.save(formData);
     },
     useThumbnail(filename) {
-      this.blog.thumbnail = filename;
+      this.lfc.thumbnail = filename;
     },
   },
   computed: {
@@ -199,9 +199,9 @@ export default {
   async created() {
     this.currentStatus = STATUS_INITIAL;
     try {
-      let blogId = this.$route.params.blogId;
-      this.blog = (await BlogsService.show(blogId)).data;
-      this.pictures = JSON.parse(this.blog.pictures);
+      let lfcId = this.$route.params.lfcId;
+      this.lfc = (await lfcService.show(lfcId)).data;
+      this.pictures = JSON.parse(this.lfc.pictures);
       this.pictureIndex = this.pictures.length;
     } catch (error) {
       console.log(error);
@@ -209,9 +209,9 @@ export default {
   },
   async mounted() {
     try {
-      let blogId = this.$route.params.blogId;
-      this.blog = (await BlogsService.show(blogId)).data;
-      this.pictures = JSON.parse(this.blog.pictures);
+      let lfcId = this.$route.params.lfcId;
+      this.lfc = (await lfcService.show(lfcId)).data;
+      this.pictures = JSON.parse(this.lfc.pictures);
     } catch (error) {
       console.log(error);
     }

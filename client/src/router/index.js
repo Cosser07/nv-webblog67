@@ -9,10 +9,10 @@ import Login from '@/components/Login'
 
 import CommentIndex from '@/components/Comments/index' 
 
-import BlogIndex from '@/components/Blogs/index'
-import BlogCreate from '@/components/Blogs/CreateBlog'
-import BlogShow from '@/components/Blogs/ShowBlog'
-import BlogEdit from '@/components/Blogs/EditBlog'
+import lfcIndex from '@/components/lfc/index'
+import lfcCreate from '@/components/lfc/Createlfc'
+import lfcShow from '@/components/lfc/Showlfc'
+import lfcEdit from '@/components/lfc/Editlfc'
 
 import Upload from '@/components/Util/Upload'
 
@@ -47,24 +47,24 @@ export default new Router({
       component: Login
     },
     {
-      path: '/blogs',
-      name: 'blogs',
-      component: BlogIndex
+      path: '/lfc',
+      name: 'lfc',
+      component: lfcIndex
     },
     {
-      path: '/blog/create',
-      name: 'blog-create',
-      component: BlogCreate
+      path: '/lfc/create',
+      name: 'lfc-create',
+      component: lfcCreate
     },
     {
-      path: '/blog/edit/:blogId',
-      name: 'blog-edit',
-      component: BlogEdit
+      path: '/lfc/edit/:lfcId',
+      name: 'lfc-edit',
+      component: lfcEdit
     },
     {
-      path: '/blog/:blogId',
-      name: 'blog',
-      component: BlogShow
+      path: '/lfc/:lfcId',
+      name: 'lfc',
+      component: lfcShow
     },
     {
       path: '/comments',
@@ -76,5 +76,6 @@ export default new Router({
       name: 'upload',
       component: Upload
     },
+    
   ]
 })
