@@ -1,7 +1,7 @@
 <template>
   <div class="form-container">
     <h1>สร้างข้อมูลผลการแข่งขัน</h1>
-    <form v-on:submit.prevent="createLfc">
+    <form v-on:submit.prevent="createlfc">
       <transition name="fade">
         <div class="thumbnail-pic" v-if="lfc.thumbnail != 'null'">
           <img :src="BASE_URL + lfc.thumbnail" alt="thumbnail" />
@@ -68,8 +68,8 @@
         <strong>หมายเลขเสื้อ:</strong>
         <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field" />
       </p>
-      <p>
-        <button type="submit" class="btn-submit">Create lfc</button>
+      <p><br>
+        <button type="submit" class="btn-submit">Create </button>
       </p>
     </form>
   </div>
@@ -226,6 +226,9 @@ export default {
       return this.currentStatus === STATUS_FAILED;
     },
   },
+  created() {
+    this.currentStatus = STATUS_INITIAL;
+  }
 };
 </script>
 

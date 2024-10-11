@@ -2,7 +2,7 @@
   <div class="form-container">
     <h1>แก้ไขข้อมูลผลการแข่งขัน</h1>
 
-    <form v-on:submit.prevent="editlfc" class="form">
+    <form v-on:submit.prevent="editlfc">
       <!-- ฟอร์มแก้ไขข้อมูล -->
       <p>
         <strong>ทีมตรงข้าม:</strong>
