@@ -17,11 +17,13 @@
       <tbody>
         <tr v-for="(match, index) in matchesData" :key="match.id">
           <td>
-  <img v-if="match.pictures && match.pictures !== 'null'" :src="BASE_URL + match.pictures" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;" />
-  <span v-else>ไม่มีรูป</span>
-</td>
+            <div class="thumbnail-pic" v-if="match.thumbnail !== 'null'">
+              <img :src="BASE_URL + match.thumbnail" alt="thumbnail" />
+            </div>
+          </td>
           <td>{{ match.opponent_team }}</td>
           <td>{{ match.match_result }}</td>
+          <td>{{ match.pictures }}</td>
           <td>
             <button class="btn btn-view" v-on:click="navigateTo('/lfc/' + match.id)">ดูรายละเอียด</button>
             <button class="btn btn-edit" v-on:click="navigateTo('/lfc/edit/' + match.id)">แก้ไข</button>
@@ -44,25 +46,30 @@ export default {
     };
   },
   async created() {
-    this.matchesData = (await lfcService.index()).data;
+    this.fetchMatches();
   },
   methods: {
     navigateTo(route) {
       this.$router.push(route);
     },
     async deleteMatch(match) {
-      let result = confirm("ต้องการลบข้อมูลนี้หรือไม่?");
+      const result = confirm("ต้องการลบข้อมูลนี้หรือไม่?");
       if (result) {
         try {
           await lfcService.delete(match);
-          this.refreshData();
+          this.fetchMatches(); // Refresh data after deletion
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
       }
     },
-    async refreshData() {
-      this.matchesData = (await lfcService.index()).data;
+    async fetchMatches() {
+      try {
+        const response = await lfcService.index();
+        this.matchesData = response.data;
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 };
@@ -88,14 +95,15 @@ export default {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-#matches-table th, #matches-table td {
+#matches-table th,
+#matches-table td {
   padding: 12px;
   border: 1px solid #ddd;
   text-align: center;
 }
 
 #matches-table th {
-  background-color: #c8102e; /* สีแดงธีมลิเวอร์พูล */
+  background-color: #c8102e; /* Liverpool theme red */
   color: #fff;
   font-weight: bold;
 }
@@ -122,12 +130,12 @@ export default {
 
 /* Button Types */
 .btn-create {
-  background-color: #c8102e; /* สีแดงธีมลิเวอร์พูล */
+  background-color: #c8102e; /* Liverpool theme red */
   color: #fff;
 }
 
 .btn-create:hover {
-  background-color: #a50f25; /* สีแดงเข้มขึ้น */
+  background-color: #a50f25; /* Darker red */
 }
 
 .btn-view {
@@ -151,12 +159,12 @@ export default {
 }
 
 .btn-delete {
-  background-color: #c8102e; /* สีแดงธีมลิเวอร์พูล */
+  background-color: #c8102e; /* Liverpool theme red */
   color: #fff;
 }
 
 .btn-delete:hover {
-  background-color: #a50f25; /* สีแดงเข้มขึ้น */
+  background-color: #a50f25; /* Darker red */
 }
 
 /* Responsive Design */
@@ -166,7 +174,8 @@ export default {
     padding: 20px;
   }
 
-  #matches-table th, #matches-table td {
+  #matches-table th,
+  #matches-table td {
     font-size: 14px;
     padding: 8px;
   }

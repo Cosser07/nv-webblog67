@@ -64,52 +64,137 @@ const STATUS_INITIAL = 0,
   STATUS_SUCCESS = 2,
   STATUS_FAILED = 3;
 
-export default {
+  export default {
   data() {
     return {
-      BASE_URL: "http://localhost:8081/uploads/",
-      currentStatus: STATUS_INITIAL,
+      BASE_URL: "http://localhost:8081/assets/uploads/",
+      error: null,
+      // uploadedFiles: [],
+      uploadError: null,
+      currentStatus: null,
       uploadFieldName: "userPhoto",
-      fileCount: 0,
+      uploadedFileNames: [],
+      pictures: [],
+      pictureIndex: 0,
       lfc: {
-        pictures: null,
-        opponent_team: "",
-        match_result: "",
-        score: "",
-        goal_minute: "",
-        player_name: "",
-        jersey_number: ""
-      }
+        title: "",
+        thumbnail: "null",
+        pictures: "null",
+        content: "",
+        category: "",
+        status: "saved",
+      },
+      config: {
+        toolbar: [
+          ["Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript"],
+        ],
+        height: 300,
+      },
     };
   },
   methods: {
+    async delFile(material) {
+      let result = confirm("Want to delete?");
+      if (result) {
+        let dataJSON = {
+          filename: material.name,
+        };
+
+        await UploadService.delete(dataJSON);
+        for (var i = 0; i < this.pictures.length; i++) {
+          if (this.pictures[i].id === material.id) {
+            this.pictures.splice(i, 1);
+            this.materialIndex--;
+            break;
+          }
+        }
+      }
+    },
     async createlfc() {
+      this.lfc.pictures = JSON.stringify(this.pictures);
+      console.log("JSON.stringify: ", this.lfc);
       try {
         await lfcService.post(this.lfc);
-        this.$router.push({ name: "lfc" });
+        this.$router.push({
+          name: "lfc",
+        });
       } catch (err) {
         console.log(err);
       }
     },
+    onBlur(editor) {
+      console.log(editor);
+    },
+    onFocus(editor) {
+      console.log(editor);
+    },
+    navigateTo(route) {
+      console.log(route);
+      this.$router.push(route);
+    },
+    wait(ms) {
+      return (x) => {
+        return new Promise((resolve) => setTimeout(() => resolve(x), ms));
+      };
+    },
+    reset() {
+      // reset form to initial state
+      this.currentStatus = STATUS_INITIAL;
+      // this.uploadedFiles = []
+      this.uploadError = null;
+      this.uploadedFileNames = [];
+    },
     async save(formData) {
+      // upload data to the server
       try {
         this.currentStatus = STATUS_SAVING;
-        const response = await UploadService.upload(formData);
+        await UploadService.upload(formData);
         this.currentStatus = STATUS_SUCCESS;
-        this.lfc.pictures = response.data.filename;
+
+        // update image uploaded display
+        let pictureJSON = [];
+        this.uploadedFileNames.forEach((uploadFilename) => {
+          let found = false;
+          for (let i = 0; i < this.pictures.length; i++) {
+            if (this.pictures[i].name == uploadFilename) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            this.pictureIndex++;
+            let pictureJSON = {
+              id: this.pictureIndex,
+              name: uploadFilename,
+            };
+            this.pictures.push(pictureJSON);
+          }
+        });
+        this.clearUploadResult();
       } catch (error) {
         console.log(error);
         this.currentStatus = STATUS_FAILED;
       }
     },
     filesChange(fieldName, fileList) {
+      // handle file changes
       const formData = new FormData();
       if (!fileList.length) return;
-      Array.from(fileList).forEach((file) => {
-        formData.append(fieldName, file, file.name);
+      // append the files to FormData
+      Array.from(Array(fileList.length).keys()).map((x) => {
+        formData.append(fieldName, fileList[x], fileList[x].name);
+        this.uploadedFileNames.push(fileList[x].name);
       });
+      // save it
       this.save(formData);
-    }
+    },
+    clearUploadResult: function () {
+      setTimeout(() => this.reset(), 5000);
+    },
+    useThumbnail(filename) {
+      console.log(filename);
+      this.lfc.thumbnail = filename;
+    },
   },
   computed: {
     isInitial() {
@@ -123,7 +208,7 @@ export default {
     },
     isFailed() {
       return this.currentStatus === STATUS_FAILED;
-    }
+    },
   }
 };
 </script>
