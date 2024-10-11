@@ -1,32 +1,30 @@
 <template>
   <div class="form-container">
     <h1>สร้างข้อมูลผลการแข่งขัน</h1>
-
-    <!-- เพิ่มส่วนเลือกไฟล์โลโก้ทีมตรงข้ามให้อยู่บนสุด -->
     <form v-on:submit.prevent="createlfc" class="form">
-      <form enctype="multipart/form-data" novalidate>
-        <div class="dropbox">
-          <input
-            type="file"
-            :name="uploadFieldName"
-            :disabled="isSaving"
-            @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length;"
-            accept="image/*"
-            class="input-file"
-          />
-          <p v-if="isInitial" class="dropbox-text">
-            เลือกไฟล์โลโก้ทีมตรงข้าม (Drag your file(s) here or click to browse)
-          </p>
-          <p v-if="isSaving">Uploading {{ fileCount }} files...</p>
-          <p v-if="isSuccess">Upload Successful.</p>
-        </div>
-      </form>
+      <div class="dropbox">
+        <input
+          type="file"
+          :name="uploadFieldName"
+          :disabled="isSaving"
+          @change="filesChange($event.target.name, $event.target.files)"
+          accept="image/*"
+          class="input-file"
+        />
+        <p v-if="isInitial" class="dropbox-text">
+          เลือกโลโก้ทีมตรงข้าม (Drag your file here or click to browse)
+        </p>
+        <p v-if="isSaving">Uploading {{ fileCount }} files...</p>
+        <p v-if="isSuccess">Upload Successful.</p>
+      </div>
+      <div v-if="lfc.pictures && lfc.pictures !== 'null'" class="thumbnail-pic">
+        <img :src="BASE_URL + lfc.pictures" alt="Opponent Logo" style="width: 100px; height: 100px;" />
+      </div>
 
       <p>
         <strong>ทีมตรงข้าม:</strong>
         <input type="text" v-model="lfc.opponent_team" placeholder="Enter team name" class="input-field"/>
       </p>
-
       <!-- ข้อมูลการแข่งขัน -->
       <p>
         <strong>ผลการแข่งขัน:</strong>
@@ -36,13 +34,11 @@
         <strong>คะแนนที่ทำได้ (สกอร์):</strong>
         <input type="text" v-model="lfc.score" placeholder="e.g., 3-1" class="input-field"/>
       </p>
-
       <!-- ข้อมูลผู้เล่นที่ทำประตู -->
       <p>
         <strong>เวลาที่ทำประตู (นาทีที่):</strong>
         <input type="text" v-model="lfc.goal_minute" placeholder="Minute" class="input-field"/>
       </p>
-
       <!-- ข้อมูลผู้เล่น -->
       <p>
         <strong>ชื่อผู้เล่น:</strong>
@@ -52,7 +48,6 @@
         <strong>หมายเลขเสื้อ:</strong>
         <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field"/>
       </p>
-
       <p>
         <button type="submit" class="btn-submit">Create lfc</button>
       </p>
@@ -62,7 +57,6 @@
 
 <script>
 import lfcService from "@/services/lfcService";
-import VueCkeditor from "vue-ckeditor2";
 import UploadService from "../../services/UploadService";
 
 const STATUS_INITIAL = 0,
@@ -73,75 +67,49 @@ const STATUS_INITIAL = 0,
 export default {
   data() {
     return {
-      BASE_URL: "http://localhost:8081/assets/uploads/",
-      error: null,
-      uploadError: null,
-      currentStatus: null,
-      uploadFieldName: "teamLogo", // เปลี่ยนชื่อฟิลด์ให้เหมาะสมกับการเลือกโลโก้ทีมตรงข้าม
-      uploadedFileNames: [],
-      pictures: [],
-      pictureIndex: 0,
-      matches: [], // เก็บข้อมูลการแข่งขันที่เพิ่ม
+      BASE_URL: "http://localhost:8081/uploads/",
+      currentStatus: STATUS_INITIAL,
+      uploadFieldName: "userPhoto",
+      fileCount: 0,
       lfc: {
-        thumbnail: "null",
-        pictures: "null",
-        opponent_team :"",
-        opponent_logo :"",
-        match_result: "", // ผลการแข่งขัน win/draw/loss
-        score: "", // คะแนนที่ได้ (สกอร์ เช่น 3-1)
-        goal_minute: "", // เวลาที่ทำประตู
-        player_name: "", // ชื่อผู้เล่น
-        jersey_number:"", // หมายเลขเสื้
-      },
+        pictures: null,
+        opponent_team: "",
+        match_result: "",
+        score: "",
+        goal_minute: "",
+        player_name: "",
+        jersey_number: ""
+      }
     };
   },
   methods: {
     async createlfc() {
-      this.lfc.pictures = JSON.stringify(this.pictures);
-      console.log("JSON.stringify: ", this.lfc);
       try {
-        // ส่งข้อมูลบล็อกไปยัง server (จำลอง)
         await lfcService.post(this.lfc);
-        // เพิ่มข้อมูลการแข่งขันไปยัง matches array เพื่อแสดงในตาราง
-        this.matches.push({
-          opponent_team: this.lfc.opponent_team,
-          match_result: this.lfc.match_result,
-          score: this.lfc.score,
-          goal_minute: this.lfc.goal_minute,
-          player_name: this.lfc.player_name,
-          jersey_number: this.lfc.jersey_number,
-        });
-
-        // ล้างข้อมูลในฟอร์ม
-        this.lfc.opponent_team = "";
-        this.lfc.match_result = "";
-        this.lfc.score = "";
-        this.lfc.goal_minute = 0;
-        this.lfc.player_name = "";
-        this.lfc.jersey_number = 0;
-
-        this.$router.push({
-          name: "lfc",
-        });
+        this.$router.push({ name: "lfc" });
       } catch (err) {
         console.log(err);
       }
     },
+    async save(formData) {
+      try {
+        this.currentStatus = STATUS_SAVING;
+        const response = await UploadService.upload(formData);
+        this.currentStatus = STATUS_SUCCESS;
+        this.lfc.pictures = response.data.filename;
+      } catch (error) {
+        console.log(error);
+        this.currentStatus = STATUS_FAILED;
+      }
+    },
     filesChange(fieldName, fileList) {
       const formData = new FormData();
-      formData.append(fieldName, fileList[0]); // รองรับการเลือกไฟล์แค่ 1 ไฟล์ (โลโก้ทีมตรงข้าม)
-      this.pictures.push({ id: this.pictureIndex++, name: URL.createObjectURL(fileList[0]) });
-    },
-    onBlur(editor) {
-      console.log(editor);
-    },
-    onFocus(editor) {
-      console.log(editor);
-    },
-    useThumbnail(filename) {
-      console.log(filename);
-      this.lfc.thumbnail = filename;
-    },
+      if (!fileList.length) return;
+      Array.from(fileList).forEach((file) => {
+        formData.append(fieldName, file, file.name);
+      });
+      this.save(formData);
+    }
   },
   computed: {
     isInitial() {
@@ -155,16 +123,11 @@ export default {
     },
     isFailed() {
       return this.currentStatus === STATUS_FAILED;
-    },
-  },
-  components: {
-    VueCkeditor,
-  },
-  created() {
-    this.currentStatus = STATUS_INITIAL;
-  },
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 /* General Styles */

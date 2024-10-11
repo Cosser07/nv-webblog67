@@ -35,8 +35,8 @@
       </p>
 
       <p>
-        <button type="submit" class="btn-submit">Update lfc</button>
-        <button v-on:click="navigateTo('/lfc')">กลับ</button>
+        <button type="submit" class="btn-submit">อัปเดตข้อมูล</button>
+        <button v-on:click="navigateTo('/lfc')" class="btn-cancel">กลับ</button>
       </p>
     </form>
   </div>
@@ -72,39 +72,41 @@ export default {
     }
   },
   async created() {
-  try {
-    let lfcId = this.$route.params.lfcId; // ดึง lfcId จาก URL
-    this.lfc = (await lfcService.show(lfcId)).data; // โหลดข้อมูล lfc จาก API
-    console.log("Loaded data:", this.lfc); // ตรวจสอบข้อมูลที่โหลดมา
-  } catch (error) {
-    console.log("Error loading data:", error);
+    try {
+      let lfcId = this.$route.params.lfcId;
+      this.lfc = (await lfcService.show(lfcId)).data;
+      console.log("Loaded data:", this.lfc);
+    } catch (error) {
+      console.log("Error loading data:", error);
+    }
   }
-}
 };
 </script>
 
 <style scoped>
-/* เพิ่มการจัดสไตล์ตามที่ต้องการ */
+/* Container Styling */
 .form-container {
   max-width: 800px;
   margin: 40px auto;
   padding: 30px;
-  background-color: #ffffff;
+  background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Input Field Styling */
 .input-field {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  background-color: #f9f9f9;
+  background-color: #f1f1f1;
   transition: all 0.3s ease;
 }
 
+/* Button Styling */
 .btn-submit {
-  background-color: #007bff;
+  background-color: #c8102e;
   color: white;
   padding: 12px 20px;
   border: none;
@@ -113,5 +115,51 @@ export default {
   font-size: 18px;
   font-weight: bold;
   transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+.btn-submit:hover {
+  background-color: #a50d23;
+}
+
+/* Cancel Button Styling */
+.btn-cancel {
+  background-color: #555;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #333;
+}
+
+/* Form Title Styling */
+h1 {
+  color: #c8102e;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-container {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .input-field {
+    font-size: 14px;
+  }
+
+  .btn-submit, .btn-cancel {
+    font-size: 16px;
+    padding: 10px 15px;
+  }
 }
 </style>

@@ -4,7 +4,7 @@ export default {
         return Api().get('lfcs')
     },
     show(lfcId) {
-        return Api().get('lfc/' + lfcId) // แก้ไขจาก 'lfc' เป็น 'lfcId'
+        return Api().get('lfc/' + lfcId)
     },
     post(lfc) {
         return Api().post('lfc', lfc)

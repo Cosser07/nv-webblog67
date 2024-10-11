@@ -2,14 +2,33 @@
     <div class="form-container">
       <h1>รายละเอียดการแข่งขัน</h1>
       <div v-if="lfc" class="details">
-        <h2>รายละเอียดการแข่งขัน</h2>
-        <p><strong>Match:</strong> {{ lfc.opponent_team }}</p>
-        <p><strong>Result:</strong> {{ lfc.match_result }}</p>
-        <p><strong>Score:</strong> {{ lfc.score }}</p>
-        <p><strong>Minute:</strong> {{ lfc.goal_minute }}</p>
-        <p><strong>Player Name:</strong> {{ lfc.player_name }}</p>
-        <p><strong>Jersey Number:</strong> {{ lfc.jersey_number }}</p>
-        <button @click="navigateTo('/lfc')">ปิดรายละเอียด</button>
+        <table class="details-table">
+          <tr>
+            <th>ทีมตรงข้าม:</th>
+            <td>{{ lfc.opponent_team }}</td>
+          </tr>
+          <tr>
+            <th>ผลการแข่งขัน:</th>
+            <td>{{ lfc.match_result }}</td>
+          </tr>
+          <tr>
+            <th>สกอร์:</th>
+            <td>{{ lfc.score }}</td>
+          </tr>
+          <tr>
+            <th>นาทีที่ทำประตู:</th>
+            <td>{{ lfc.goal_minute }}</td>
+          </tr>
+          <tr>
+            <th>ชื่อผู้เล่น:</th>
+            <td>{{ lfc.player_name }}</td>
+          </tr>
+          <tr>
+            <th>หมายเลขเสื้อ:</th>
+            <td>{{ lfc.jersey_number }}</td>
+          </tr>
+        </table>
+        <button @click="navigateTo('/lfc')">กลับไปยังหน้าแรก</button>
       </div>
     </div>
   </template>
@@ -39,23 +58,45 @@
   };
   </script>
   
-  
   <style scoped>
   .form-container {
     max-width: 800px;
     margin: 40px auto;
     padding: 30px;
-    background-color: #ffffff;
+    background-color: #f9f9f9;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
   }
-  .details p {
-    font-size: 18px;
-    line-height: 1.5;
+  
+  /* Table Styling */
+  .details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
   }
+  
+  .details-table th,
+  .details-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .details-table th {
+    background-color: #c8102e; /* สีแดงธีมลิเวอร์พูล */
+    color: white;
+    width: 30%;
+  }
+  
+  .details-table td {
+    background-color: #fff;
+  }
+  
+  /* Button Styling */
   button {
     margin-top: 20px;
-    background-color: #007bff;
+    background-color: #c8102e; /* สีแดงธีมลิเวอร์พูล */
     color: white;
     padding: 12px 20px;
     border: none;
@@ -65,8 +106,9 @@
     font-weight: bold;
     transition: background-color 0.3s ease;
   }
+  
   button:hover {
-    background-color: #0056b3;
+    background-color: #a50f25; /* สีแดงเข้มขึ้นเมื่อ hover */
   }
   </style>
   
