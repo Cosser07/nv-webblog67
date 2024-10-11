@@ -1,0 +1,19 @@
+--
+-- File generated with SQLiteStudio v3.4.4 on ศ. ต.ค. 11 12:42:08 2024
+--
+-- Text encoding used: System
+--
+PRAGMA foreign_keys = off;
+BEGIN TRANSACTION;
+
+-- Table: goals
+CREATE TABLE IF NOT EXISTS goals (goal_id PRIMARY KEY, match_id INTEGER NOT NULL REFERENCES matches (match_id) ON DELETE CASCADE ON UPDATE CASCADE, player_id INTEGER NOT NULL REFERENCES players (player_id) ON DELETE NO ACTION ON UPDATE NO ACTION, goal_minute VARCHAR (100) NOT NULL);
+
+-- Table: matches
+CREATE TABLE IF NOT EXISTS matches (match_id INTEGER PRIMARY KEY, opponent_team VARCHAR (100) NOT NULL, opponent_logo VARCHAR (255), match_result TEXT CHECK (match_result IN ('win', 'draw', 'loss')), score VARCHAR (10), match_date DATE);
+
+-- Table: players
+CREATE TABLE IF NOT EXISTS players (player_id PRIMARY KEY, player_name VARCHAR (255) NOT NULL, jersey_number VARCHAR (100) NOT NULL);
+
+COMMIT TRANSACTION;
+PRAGMA foreign_keys = on;

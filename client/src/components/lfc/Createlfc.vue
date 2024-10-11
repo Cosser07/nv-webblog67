@@ -23,14 +23,14 @@
       </form>
 
       <p>
-        <label for="title"><strong>ทีมตรงข้าม:</strong></label>
-        <input type="text" id="title" v-model="lfc.title" placeholder="Enter team name" class="input-field"/>
+        <strong>ทีมตรงข้าม:</strong>
+        <input type="text" v-model="lfc.opponent_team" placeholder="Enter team name" class="input-field"/>
       </p>
 
       <!-- ข้อมูลการแข่งขัน -->
       <p>
         <strong>ผลการแข่งขัน:</strong>
-        <input type="text" v-model="lfc.matchResult" placeholder="Win/Draw/Loss" class="input-field"/>
+        <input type="text" v-model="lfc.match_result" placeholder="Win/Draw/Loss" class="input-field"/>
       </p>
       <p>
         <strong>คะแนนที่ทำได้ (สกอร์):</strong>
@@ -39,22 +39,18 @@
 
       <!-- ข้อมูลผู้เล่นที่ทำประตู -->
       <p>
-        <strong>ผู้เล่นที่ทำประตู:</strong>
-        <input type="text" v-model="lfc.goalScorer" placeholder="Player who scored" class="input-field"/>
-      </p>
-      <p>
         <strong>เวลาที่ทำประตู (นาทีที่):</strong>
-        <input type="number" v-model="lfc.goalMinute" placeholder="Minute" class="input-field"/>
+        <input type="text" v-model="lfc.goal_minute" placeholder="Minute" class="input-field"/>
       </p>
 
       <!-- ข้อมูลผู้เล่น -->
       <p>
         <strong>ชื่อผู้เล่น:</strong>
-        <input type="text" v-model="lfc.playerName" placeholder="Player Name" class="input-field"/>
+        <input type="text" v-model="lfc.player_name" placeholder="Player Name" class="input-field"/>
       </p>
       <p>
         <strong>หมายเลขเสื้อ:</strong>
-        <input type="number" v-model="lfc.playerNumber" placeholder="Jersey Number" class="input-field"/>
+        <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field"/>
       </p>
 
       <p>
@@ -87,24 +83,15 @@ export default {
       pictureIndex: 0,
       matches: [], // เก็บข้อมูลการแข่งขันที่เพิ่ม
       lfc: {
-        title: "",
         thumbnail: "null",
         pictures: "null",
-        content: "",
-        matchResult: "", // ผลการแข่งขัน
-        score: "", // คะแนนที่ทำได้
-        goalScorer: "", // ผู้เล่นที่ทำประตู
-        goalMinute: 0, // เวลาที่ทำประตู
-        playerName: "", // ชื่อผู้เล่น
-        playerNumber: 0, // หมายเลขเสื้อ
-        category: "",
-        status: "saved",
-      },
-      config: {
-        toolbar: [
-          ["Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript"],
-        ],
-        height: 300,
+        opponent_team :"",
+        opponent_logo :"",
+        match_result: "", // ผลการแข่งขัน win/draw/loss
+        score: "", // คะแนนที่ได้ (สกอร์ เช่น 3-1)
+        goal_minute: "", // เวลาที่ทำประตู
+        player_name: "", // ชื่อผู้เล่น
+        jersey_number:"", // หมายเลขเสื้
       },
     };
   },
@@ -117,23 +104,21 @@ export default {
         await lfcService.post(this.lfc);
         // เพิ่มข้อมูลการแข่งขันไปยัง matches array เพื่อแสดงในตาราง
         this.matches.push({
-          title: this.lfc.title,
-          result: this.lfc.matchResult,
+          opponent_team: this.lfc.opponent_team,
+          match_result: this.lfc.match_result,
           score: this.lfc.score,
-          goalScorer: this.lfc.goalScorer,
-          goalMinute: this.lfc.goalMinute,
-          playerName: this.lfc.playerName,
-          playerNumber: this.lfc.playerNumber,
+          goal_minute: this.lfc.goal_minute,
+          player_name: this.lfc.player_name,
+          jersey_number: this.lfc.jersey_number,
         });
 
         // ล้างข้อมูลในฟอร์ม
-        this.lfc.title = "";
-        this.lfc.matchResult = "";
+        this.lfc.opponent_team = "";
+        this.lfc.match_result = "";
         this.lfc.score = "";
-        this.lfc.goalScorer = "";
-        this.lfc.goalMinute = 0;
-        this.lfc.playerName = "";
-        this.lfc.playerNumber = 0;
+        this.lfc.goal_minute = 0;
+        this.lfc.player_name = "";
+        this.lfc.jersey_number = 0;
 
         this.$router.push({
           name: "lfc",
@@ -191,7 +176,7 @@ export default {
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f5f5f5;
+  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
 }
@@ -200,60 +185,64 @@ body {
 .form-container {
   max-width: 800px;
   margin: 40px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Form Styling */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .input-field {
-  width: 50%;
-  padding: 8px;
-  border-radius: 5px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #ddd;
+  background-color: #f9f9f9;
   transition: all 0.3s ease;
 }
 
 .input-field:focus {
-  border-color: #cc0000;
+  border-color: #007bff;
+  background-color: #ffffff;
   outline: none;
 }
 
 .btn-submit {
-  background-color: #cc0000;
+  background-color: #007bff;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
   transition: background-color 0.3s ease;
 }
 
 .btn-submit:hover {
-  background-color: #b30000;
+  background-color: #0056b3;
 }
 
 /* Dropzone */
 .dropbox {
-  outline: 2px dashed grey;
-  background: lemonchiffon;
-  color: dimgray;
-  padding: 20px;
+  outline: 2px dashed #007bff;
+  background: #e9f7ff;
+  color: #333;
+  padding: 30px;
   text-align: center;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 .dropbox:hover {
-  background-color: khaki;
+  background-color: #d0eaff;
 }
 
 .thumbnail-pic img {
@@ -270,38 +259,45 @@ table {
 }
 
 th, td {
-  padding: 12px;
+  padding: 16px;
   text-align: center;
   border: 1px solid #ddd;
+  font-size: 16px;
 }
 
 th {
-  background-color: #cc0000;
+  background-color: #007bff;
   color: white;
 }
 
 td {
   background-color: white;
-  color: #333;
+  color: #555;
 }
 
 tr:nth-child(even) td {
-  background-color: #f9f9f9;
+  background-color: #f2f2f2;
 }
 
 tr:hover td {
-  background-color: #f1f1f1;
+  background-color: #e0e0e0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .form-container {
-    width: 100%;
-    padding: 10px;
+    width: 95%;
+    padding: 20px;
+  }
+
+  .input-field,
+  .btn-submit {
+    font-size: 16px;
   }
 
   table, th, td {
     font-size: 14px;
   }
 }
+
 </style>

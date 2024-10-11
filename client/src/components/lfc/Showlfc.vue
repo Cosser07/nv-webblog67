@@ -1,134 +1,72 @@
 <template>
-    <div class="container">
-        <h1>Liverpool Premier League 2023-2024</h1>
-
-        <table id="matches-table">
-            <thead>
-                <tr>
-                    <th>Match</th>
-                    <th>Result</th>
-                    <th>Score</th>
-                    <th>Goalscorer</th>
-                    <th>Minute</th>
-                    <th>Player Name</th>
-                    <th>Jersey Number</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="match in matchesData" :key="match.match">
-                    <td>{{ match.match }}</td>
-                    <td>{{ match.result }}</td>
-                    <td>{{ match.score }}</td>
-                    <td>{{ match.goalscorer }}</td>
-                    <td>{{ match.minute }}</td>
-                    <td>{{ match.playerName }}</td>
-                    <td>{{ match.jerseyNumber }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="form-container">
+      <h1>รายละเอียดการแข่งขัน</h1>
+      <div v-if="lfc" class="details">
+        <h2>รายละเอียดการแข่งขัน</h2>
+        <p><strong>Match:</strong> {{ lfc.opponent_team }}</p>
+        <p><strong>Result:</strong> {{ lfc.match_result }}</p>
+        <p><strong>Score:</strong> {{ lfc.score }}</p>
+        <p><strong>Minute:</strong> {{ lfc.goal_minute }}</p>
+        <p><strong>Player Name:</strong> {{ lfc.player_name }}</p>
+        <p><strong>Jersey Number:</strong> {{ lfc.jersey_number }}</p>
+        <button @click="navigateTo('/lfc')">ปิดรายละเอียด</button>
+      </div>
     </div>
-</template>
-
-<script>
-export default {
+  </template>
+  
+  <script>
+  import lfcService from "@/services/lfcService";
+  
+  export default {
     data() {
-        return {
-            matchesData: [
-                {
-                    match: 'Liverpool vs Man City',
-                    result: 'Win',
-                    score: '3-2',
-                    goalscorer: 'Mohamed Salah',
-                    minute: '29',
-                    playerName: 'Mohamed Salah',
-                    jerseyNumber: 11
-                },
-                {
-                    match: 'Liverpool vs Chelsea',
-                    result: 'Draw',
-                    score: '1-1',
-                    goalscorer: 'Sadio Mane',
-                    minute: '45',
-                    playerName: 'Sadio Mane',
-                    jerseyNumber: 10
-                },
-                {
-                    match: 'Liverpool vs Arsenal',
-                    result: 'Win',
-                    score: '2-1',
-                    goalscorer: 'Roberto Firmino',
-                    minute: '70',
-                    playerName: 'Roberto Firmino',
-                    jerseyNumber: 9
-                }
-            ]
-        }
+      return {
+        lfc: null
+      };
+    },
+    async created() {
+      try {
+        let lfcId = this.$route.params.lfcId; // ดึง lfcId จาก URL
+        this.lfc = (await lfcService.show(lfcId)).data; // โหลดข้อมูล lfc จาก API
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    methods: {
+      navigateTo(route) {
+        this.$router.push(route);
+      }
     }
-}
-</script>
-
-<style scoped>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    text-align: center;
-    color: #cc0000;
-    margin-bottom: 20px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 12px;
-    text-align: center;
-}
-
-th {
-    background-color: #cc0000;
+  };
+  </script>
+  
+  
+  <style scoped>
+  .form-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+  .details p {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  button {
+    margin-top: 20px;
+    background-color: #007bff;
     color: white;
-}
-
-tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-tr:hover {
-    background-color: #ddd;
-}
-
-td {
-    font-size: 16px;
-}
-
-@media (max-width: 768px) {
-    table {
-        font-size: 14px;
-    }
-}
-</style>
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  </style>
+  
