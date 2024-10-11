@@ -15,19 +15,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(match, index) in matchesData" :key="match.id">
+        <tr v-for="lfc in lfc" v-bind:key="lfc.id">
           <td>
-            <div class="thumbnail-pic" v-if="match.thumbnail !== 'null'">
-              <img :src="BASE_URL + match.thumbnail" alt="thumbnail" />
+            <div v-if="lfc.thumbnail && lfc.thumbnail !== 'null'" class="thumbnail-container">
+              <img :src="BASE_URL + lfc.thumbnail" alt="รูปภาพ thumbnail" class="thumbnail" />
             </div>
           </td>
-          <td>{{ match.opponent_team }}</td>
-          <td>{{ match.match_result }}</td>
-          <td>{{ match.pictures }}</td>
+          <td>{{ lfc.opponent_team }}</td>
+          <td>{{ lfc.match_result }}</td>
           <td>
-            <button class="btn btn-view" v-on:click="navigateTo('/lfc/' + match.id)">ดูรายละเอียด</button>
-            <button class="btn btn-edit" v-on:click="navigateTo('/lfc/edit/' + match.id)">แก้ไข</button>
-            <button class="btn btn-delete" v-on:click="deleteMatch(match)">ลบ</button>
+            <button class="btn btn-view" v-on:click="navigateTo('/lfc/' + lfc.id)">ดูรายละเอียด</button>
+            <button class="btn btn-edit" v-on:click="navigateTo('/lfc/edit/' + lfc.id)">แก้ไข</button>
+            <button class="btn btn-delete" v-on:click="deleteMatch(lfc)">ลบ</button>
           </td>
         </tr>
       </tbody>
@@ -41,35 +40,30 @@ import lfcService from '@/services/lfcService';
 export default {
   data() {
     return {
-      BASE_URL: "http://localhost:8081/uploads/",
-      matchesData: []
+      BASE_URL: "http://localhost:8081/assets/uploads/",
+      lfc: []
     };
   },
   async created() {
-    this.fetchMatches();
+    this.lfc = (await lfcService.index()).data;
   },
   methods: {
     navigateTo(route) {
       this.$router.push(route);
     },
-    async deleteMatch(match) {
+    async deleteMatch(lfc) {
       const result = confirm("ต้องการลบข้อมูลนี้หรือไม่?");
       if (result) {
         try {
-          await lfcService.delete(match);
-          this.fetchMatches(); // Refresh data after deletion
+          await lfcService.delete(lfc);
+          this.refreshData();
         } catch (err) {
-          console.error(err);
+          console.log(err);
         }
       }
     },
-    async fetchMatches() {
-      try {
-        const response = await lfcService.index();
-        this.matchesData = response.data;
-      } catch (err) {
-        console.error(err);
-      }
+    async refreshData() {
+      this.lfc = (await lfcService.index()).data;
     }
   }
 };
@@ -114,6 +108,18 @@ export default {
 
 #matches-table tr:hover {
   background-color: #ddd;
+}
+
+/* Thumbnail Styling */
+.thumbnail-container {
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.thumbnail {
+  max-width: 50px; /* ปรับขนาดโลโก้ให้เล็กลง */
+  height: auto;
+  border-radius: 3px;
 }
 
 /* Button Styling */

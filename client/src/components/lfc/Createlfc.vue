@@ -1,52 +1,72 @@
 <template>
   <div class="form-container">
     <h1>สร้างข้อมูลผลการแข่งขัน</h1>
-    <form v-on:submit.prevent="createlfc" class="form">
+    <form v-on:submit.prevent="createLfc">
+      <transition name="fade">
+        <div class="thumbnail-pic" v-if="lfc.thumbnail != 'null'">
+          <img :src="BASE_URL + lfc.thumbnail" alt="thumbnail" />
+        </div>
+      </transition>
+      <form enctype="multipart/form-data" novalidate>
       <div class="dropbox">
         <input
-          type="file"
-          :name="uploadFieldName"
-          :disabled="isSaving"
-          @change="filesChange($event.target.name, $event.target.files)"
-          accept="image/*"
-          class="input-file"
-        />
-        <p v-if="isInitial" class="dropbox-text">
-          เลือกโลโก้ทีมตรงข้าม (Drag your file here or click to browse)
-        </p>
+            type="file"
+            multiple
+            :name="uploadFieldName"
+            :disabled="isSaving"
+            @change="
+              filesChange($event.target.name, $event.target.files);
+              fileCount = $event.target.files.length;
+            "
+            accept="image/*"
+            class="input-file"
+          />
+        <p v-if="isInitial">เลือกโลโก้ทีมตรงข้าม (Drag your file here or click to browse)</p>
         <p v-if="isSaving">Uploading {{ fileCount }} files...</p>
         <p v-if="isSuccess">Upload Successful.</p>
       </div>
-      <div v-if="lfc.pictures && lfc.pictures !== 'null'" class="thumbnail-pic">
-        <img :src="BASE_URL + lfc.pictures" alt="Opponent Logo" style="width: 100px; height: 100px;" />
+    </form>
+    
+        <div>
+    <transition-group tag="ul" class="pictures">
+          <li v-for="picture in pictures" v-bind:key="picture.id">
+            <img
+              style="margin-bottom: 5px"
+              :src="BASE_URL + picture.name"
+              alt="picture image"
+            />
+            <br />
+            <button v-on:click.prevent="useThumbnail(picture.name)">
+              Thumbnail
+            </button>
+            <button v-on:click.prevent="delFile(picture)">Delete</button>
+          </li>
+        </transition-group>
+        <div class="clearfix"></div>
       </div>
-
       <p>
         <strong>ทีมตรงข้าม:</strong>
-        <input type="text" v-model="lfc.opponent_team" placeholder="Enter team name" class="input-field"/>
+        <input type="text" v-model="lfc.opponent_team" placeholder="Enter team name" class="input-field" />
       </p>
-      <!-- ข้อมูลการแข่งขัน -->
       <p>
         <strong>ผลการแข่งขัน:</strong>
-        <input type="text" v-model="lfc.match_result" placeholder="Win/Draw/Loss" class="input-field"/>
+        <input type="text" v-model="lfc.match_result" placeholder="Win/Draw/Loss" class="input-field" />
       </p>
       <p>
         <strong>คะแนนที่ทำได้ (สกอร์):</strong>
-        <input type="text" v-model="lfc.score" placeholder="e.g., 3-1" class="input-field"/>
+        <input type="text" v-model="lfc.score" placeholder="e.g., 3-1" class="input-field" />
       </p>
-      <!-- ข้อมูลผู้เล่นที่ทำประตู -->
       <p>
         <strong>เวลาที่ทำประตู (นาทีที่):</strong>
-        <input type="text" v-model="lfc.goal_minute" placeholder="Minute" class="input-field"/>
+        <input type="text" v-model="lfc.goal_minute" placeholder="Minute" class="input-field" />
       </p>
-      <!-- ข้อมูลผู้เล่น -->
       <p>
         <strong>ชื่อผู้เล่น:</strong>
-        <input type="text" v-model="lfc.player_name" placeholder="Player Name" class="input-field"/>
+        <input type="text" v-model="lfc.player_name" placeholder="Player Name" class="input-field" />
       </p>
       <p>
         <strong>หมายเลขเสื้อ:</strong>
-        <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field"/>
+        <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field" />
       </p>
       <p>
         <button type="submit" class="btn-submit">Create lfc</button>
@@ -64,7 +84,7 @@ const STATUS_INITIAL = 0,
   STATUS_SUCCESS = 2,
   STATUS_FAILED = 3;
 
-  export default {
+export default {
   data() {
     return {
       BASE_URL: "http://localhost:8081/assets/uploads/",
@@ -77,18 +97,15 @@ const STATUS_INITIAL = 0,
       pictures: [],
       pictureIndex: 0,
       lfc: {
-        title: "",
-        thumbnail: "null",
         pictures: "null",
-        content: "",
-        category: "",
-        status: "saved",
-      },
-      config: {
-        toolbar: [
-          ["Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript"],
-        ],
-        height: 300,
+        opponent_team: "",
+        match_result: "",
+        score: "",
+        goal_minute: "",
+        player_name: "",
+        jersey_number: "",
+        thumbnail: "null", // รูปภาพโลโก้ทีมตรงข้าม
+        status: "saved"
       },
     };
   },
@@ -121,8 +138,7 @@ const STATUS_INITIAL = 0,
       } catch (err) {
         console.log(err);
       }
-    },
-    onBlur(editor) {
+    },onBlur(editor) {
       console.log(editor);
     },
     onFocus(editor) {
@@ -209,10 +225,9 @@ const STATUS_INITIAL = 0,
     isFailed() {
       return this.currentStatus === STATUS_FAILED;
     },
-  }
+  },
 };
 </script>
-
 
 <style scoped>
 /* General Styles */
@@ -225,8 +240,6 @@ const STATUS_INITIAL = 0,
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f0f2f5;
-  margin: 0;
-  padding: 0;
 }
 
 /* Form Container */
@@ -240,12 +253,6 @@ body {
 }
 
 /* Form Styling */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
 .input-field {
   width: 100%;
   padding: 12px;
@@ -298,39 +305,6 @@ body {
   margin: 10px 0;
 }
 
-/* Matches Table */
-table {
-  width: 100%;
-  margin: 20px 0;
-  border-collapse: collapse;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-  padding: 16px;
-  text-align: center;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
-
-th {
-  background-color: #007bff;
-  color: white;
-}
-
-td {
-  background-color: white;
-  color: #555;
-}
-
-tr:nth-child(even) td {
-  background-color: #f2f2f2;
-}
-
-tr:hover td {
-  background-color: #e0e0e0;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .form-container {
@@ -342,10 +316,27 @@ tr:hover td {
   .btn-submit {
     font-size: 16px;
   }
-
-  table, th, td {
-    font-size: 14px;
-  }
 }
-
+ul.pictures {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+ul.pictures li {
+  float: left;
+}
+ul.pictures li img {
+  max-width: 180px;
+  margin-right: 20px;
+}
+.clearfix {
+  clear: both;
+}
+/* thumbnail */
+.thumbnail-pic img {
+  width: 200px;
+}
 </style>
