@@ -69,7 +69,7 @@
         <input type="text" v-model="lfc.jersey_number" placeholder="Jersey Number" class="input-field" />
       </p>
       <p><br>
-        <button type="submit" class="btn-submit">Create </button>
+        <button type="submit" class="btn-submit">สร้าง </button>
       </p>
     </form>
   </div>

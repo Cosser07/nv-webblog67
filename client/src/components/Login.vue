@@ -29,8 +29,10 @@
           </button>
           <div class="text-danger mt-3" v-if="error">{{ error }}</div>
         </form>
+
+
         <div class="social-login">
-          <h3>log in via</h3>
+          <!-- <h3>log in via</h3> -->
           <div class="social-icons">
             <a href="#" class="social-login__icon fab fa-instagram"></a>
             <a href="#" class="social-login__icon fab fa-facebook"></a>
@@ -50,6 +52,7 @@
 
 <script>
 import AuthenService from "../services/AuthenService";
+
 export default {
   data() {
     return {
@@ -79,6 +82,10 @@ export default {
         this.password = "";
       }
     },
+    // ฟังก์ชันสำหรับเปลี่ยนเส้นทางไปหน้าสร้างผู้ใช้ใหม่
+    navigateToCreateUser() {
+      this.$router.push("/user/create");
+    },
   },
 };
 </script>
@@ -102,7 +109,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 20px; /* เพิ่ม padding เพื่อให้มีระยะห่างจากขอบ */
+  padding: 20px;
 }
 
 .screen {
@@ -111,8 +118,8 @@ body {
   height: 600px;
   width: 360px;
   box-shadow: 0px 0px 24px #5C5696;
-  overflow: hidden; /* ป้องกันไม่ให้ background shape เกินออกมานอกขอบ */
-  border-radius: 20px; /* เพิ่มขอบโค้งมนเพื่อความสวยงาม */
+  overflow: hidden;
+  border-radius: 20px;
 }
 
 .screen__content {
@@ -120,6 +127,7 @@ body {
   position: relative;
   height: 100%;
 }
+
 .screen__background {
   position: absolute;
   top: 0;
@@ -250,5 +258,27 @@ body {
   padding: 20px 10px;
   color: #fff;
   text-decoration: none;
+}
+
+.btn-secondary {
+  background: #fff;
+  font-size: 14px;
+  margin-top: 30px;
+  padding: 16px 20px;
+  border-radius: 26px;
+  border: 1px solid #D4D3E8;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #eb1414;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-secondary:hover {
+  border-color: #6A679E;
 }
 </style>

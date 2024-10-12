@@ -5,7 +5,13 @@
         <li><router-link :to="{ name: 'lfc' }">Liverpool</router-link></li>
         <li><router-link :to="{ name: 'users' }">Users</router-link></li>
         <!-- <li><router-link :to="{ name: 'comments' }">Comments</router-link></li> -->
-        <li><router-link :to="{ name: 'login' }">Login</router-link></li>
+       <!-- ถ้า isLogin เป็นจริง ให้แสดงเมนูออกจากระบบ มิฉะนั้น ให้แสดงเมนูเข้าสู่ระบบ -->
+       <li v-if="isLogin()">
+          <a @click="logout">Logout</a>
+        </li>
+        <li v-else>
+          <router-link :to="{ name: 'login' }">Login</router-link>
+        </li>
       </ul>
     </div>
   </div>
