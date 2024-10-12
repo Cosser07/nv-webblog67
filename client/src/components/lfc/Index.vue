@@ -79,6 +79,7 @@ export default {
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
+  font-family: "Kanit", sans-serif;
 }
 
 /* Table Styling */
@@ -91,9 +92,10 @@ export default {
 
 #matches-table th,
 #matches-table td {
-  padding: 12px;
+  padding: 15px;
   border: 1px solid #ddd;
   text-align: center;
+  font-size: 16px;
 }
 
 #matches-table th {
@@ -113,13 +115,13 @@ export default {
 /* Thumbnail Styling */
 .thumbnail-container {
   text-align: center;
-  margin-bottom: 2px;
+  margin-bottom: 5px;
 }
 
 .thumbnail {
-  max-width: 50px; /* ปรับขนาดโลโก้ให้เล็กลง */
-  height: auto;
-  border-radius: 3px;
+  max-width: 50px;
+  height: 50px;
+  border-radius: 5px;
 }
 
 /* Button Styling */

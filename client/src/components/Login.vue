@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100">
     <div class="screen">
       <div class="screen__content">
         <form v-on:submit.prevent="onLogin" class="login">
@@ -9,7 +9,7 @@
               type="email"
               v-model="email"
               class="login__input"
-              placeholder="User name / Email"
+              placeholder="email"
               required
             />
           </div>
@@ -28,11 +28,11 @@
             <i class="button__icon fas fa-chevron-right"></i>
           </button>
           <div class="text-danger mt-3" v-if="error">{{ error }}</div>
+          
         </form>
-
+        
 
         <div class="social-login">
-          <!-- <h3>log in via</h3> -->
           <div class="social-icons">
             <a href="#" class="social-login__icon fab fa-instagram"></a>
             <a href="#" class="social-login__icon fab fa-facebook"></a>
@@ -82,10 +82,6 @@ export default {
         this.password = "";
       }
     },
-    // ฟังก์ชันสำหรับเปลี่ยนเส้นทางไปหน้าสร้างผู้ใช้ใหม่
-    navigateToCreateUser() {
-      this.$router.push("/user/create");
-    },
   },
 };
 </script>
@@ -100,20 +96,16 @@ export default {
   font-family: Raleway, sans-serif;
 }
 
-body {
-  background: linear-gradient(90deg, #C7C5F4, #776BCC);
-}
-
-.container {
+.container-fluid {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100vh; /* สูงเต็มจอ */
   padding: 20px;
 }
 
 .screen {
-  background: linear-gradient(90deg, #5D54A4, #7C78B8);
+  background: linear-gradient(90deg, #c8102e, #a50e26); /* เปลี่ยนสีพื้นหลังเป็นสีแดงธีม Liverpool */
   position: relative;
   height: 600px;
   width: 360px;
@@ -154,7 +146,7 @@ body {
 .screen__background__shape2 {
   height: 220px;
   width: 220px;
-  background: #6C63AC;
+  background: #c8102e; /* เปลี่ยนเป็นสีแดงธีม Liverpool */
   top: -172px;
   right: 0;
   border-radius: 32px;
@@ -163,7 +155,7 @@ body {
 .screen__background__shape3 {
   height: 540px;
   width: 190px;
-  background: linear-gradient(270deg, #5D54A4, #6A679E);
+  background: linear-gradient(270deg, #c8102e, #a50e26); /* เปลี่ยนเป็นสีแดงเข้ม */
   top: -24px;
   right: 0;
   border-radius: 32px;
@@ -172,7 +164,7 @@ body {
 .screen__background__shape4 {
   height: 400px;
   width: 200px;
-  background: #7E7BB9;
+  background: #a50e26; /* เปลี่ยนเป็นสีแดงเข้ม */
   top: 420px;
   right: 50px;
   border-radius: 60px;
@@ -212,30 +204,32 @@ body {
 }
 
 .login__submit {
-  background: #fff;
+  background: #000000; /* เปลี่ยนสีเป็นสีแดงธีม Liverpool */
   font-size: 14px;
   margin-top: 30px;
   padding: 16px 20px;
   border-radius: 26px;
-  border: 1px solid #D4D3E8;
+  border: 1px solid #c8102e;
   text-transform: uppercase;
   font-weight: 700;
   display: flex;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  color: #eb1414;
+  color: #fff;
   cursor: pointer;
   transition: .2s;
 }
 
 .login__submit:hover {
-  border-color: #6A679E;
+  background-color: #ca0c2c; /* เพิ่มเอฟเฟกต์ hover */
+  border-color: #a50e26;
 }
 
 .button__icon {
   font-size: 24px;
-  margin-left: auto;
-  color: #7875B5;
+  margin-left: 10px;
+  color: #fff;
 }
 
 .social-login {
@@ -258,27 +252,5 @@ body {
   padding: 20px 10px;
   color: #fff;
   text-decoration: none;
-}
-
-.btn-secondary {
-  background: #fff;
-  font-size: 14px;
-  margin-top: 30px;
-  padding: 16px 20px;
-  border-radius: 26px;
-  border: 1px solid #D4D3E8;
-  text-transform: uppercase;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  color: #eb1414;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.btn-secondary:hover {
-  border-color: #6A679E;
 }
 </style>
